@@ -1,3 +1,6 @@
+# Ignore generated pictures (shouldn't be public by default)
+img/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,0 +1,3 @@
+[submodule "mathconverter"]
+	path = mathconverter
+	url = git@github.com:AndreG-P/mathconverter.git

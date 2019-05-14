@@ -148,8 +148,8 @@ for c in range(0, max):
         plt.plot([Y], [c+1], marker='o', color='green')
 
 # 'Before' and 'After' Annotations
-ax.text(X, max+1, 'ARXIV', horizontalalignment='center', verticalalignment='center', fontdict={'size':12, 'weight':600})
-ax.text(Y, max+1, 'ZBMATH', horizontalalignment='center', verticalalignment='center', fontdict={'size':12, 'weight':600})
+ax.text(X, max+1, 'ARXIV', horizontalalignment='center', verticalalignment='center', fontdict={'size': 12, 'weight': 600})
+ax.text(Y, max+1, 'ZBMATH', horizontalalignment='center', verticalalignment='center', fontdict={'size': 12, 'weight': 600})
 
 # Decoration
 title = "'{:s}'".format(searchString)

@@ -11,11 +11,11 @@ plt.rc('text', usetex=True)
 plt.rc('text.latex', preamble=r'\usepackage{amsmath} \usepackage{amssymb}')
 matplotlib.verbose.level = 'debug-annoying'
 
-complexity = 1
+complexity = 3
 comparison_level = 3
-X = 0.4
-Y = 0.8
-max = 50
+X = 0.8
+Y = 1
+max = 35
 
 dataArxiv = "/opt/arxmliv/stats/allMMLDepth{:n}.txt".format(int(complexity))
 dataZBM = "/opt/zbmath/stats/allMMLDepth{:n}.txt".format(int(complexity))
@@ -27,41 +27,34 @@ lineRegex = re.compile(r'^(\d+),(.*)$')
 
 def loadFile(file):
     labels = []
-    lineCounter = 0;
+    lineCounter = 0
     for line in file:
         if lineCounter >= max:
             break
         match = lineRegex.match(line)
+
         mml = match.group(2)
-        if not mml:
-            labels.append("")
-        elif "span" in mml:
-            labels.append("$span))$")
-        else:
-            # print(mml)
-            mml = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + mml + "</math>"
-            latex = mathml2latex_yarosh(mml)
-            # print(latex)
+        if not mml or "span" in mml:
+            continue
 
-            # if "\\begin{array}{cc}a& b\\\\ c& d\\end{array}" in latex:
-            #     latex = "$\\binom{a\\ b}{c\\ d}$"
-            # elif "array" in latex:
-            #     latex = ""
-            # elif "$\\left({\\text{,}\\text{))[g]}\\right)}_{}$" in latex:
-            #     latex = "$({\\text{,}\\text{))[g]})}_{}$"
-            # elif "$\\underset{n\\to \\infty }{lim}$" in latex:
-            #     latex = "$\lim_{n \\to \\infty}$"
+        mml = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + mml + "</math>"
+        latex = mathml2latex_yarosh(mml)
+        # print(latex)
 
-            latex = re.sub(r'~', r'\sim', latex)
-            latex = re.sub(r'\\ge\s', r'\\geq', latex)
-            latex = re.sub(r'\u211d', r'\mathbb{R}', latex)
-            latex = re.sub(r'\u210b', r'\mathcal{H}', latex)
-            latex = re.sub(r'×', r'\\times ', latex)
-            latex = re.sub(r'𝑑', r'd ', latex)
-            latex = re.sub(r'𝐱', r'x ', latex)
+        if "{,}_{2}" in latex:
+            continue
 
-            labels.append(latex)
-            # print(latex)
+        latex = re.sub(r'~', r'\sim', latex)
+        latex = re.sub(r'\\ge\s', r'\\geq', latex)
+        latex = re.sub(r'&lt;', r'<', latex)
+        latex = re.sub(r'\u211d', r'\mathbb{R}', latex)
+        latex = re.sub(r'\u210b', r'\mathcal{H}', latex)
+        latex = re.sub(r'×', r'\\times ', latex)
+        latex = re.sub(r'𝑑', r'd ', latex)
+        latex = re.sub(r'𝐱', r'x ', latex)
+
+        labels.append(latex)
+        # print(latex)
         lineCounter += 1
     return labels
 
@@ -128,8 +121,20 @@ for c1, c2 in zip(arxiv_labels, zbmath_labels):
         plt.plot([X], [max-counter], marker='o', color='red')
     if zbmath_ordered[counter] < 0:
         plt.plot([Y], [max - counter], marker='o', color='red')
-    ax.text(X-0.02, arxiv_range[counter], c1, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
-    ax.text(Y+0.02, zbmath_range[counter], c2, horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
+    ax.text(X-0.02,
+            arxiv_range[counter],
+            c1,
+            horizontalalignment='right',
+            verticalalignment='center',
+            fontdict={'size': 16}
+            )
+    ax.text(Y+0.02,
+            zbmath_range[counter],
+            c2,
+            horizontalalignment='left',
+            verticalalignment='center',
+            fontdict={'size': 16}
+            )
     counter += 1
 
 # 'Before' and 'After' Annotations
@@ -137,11 +142,17 @@ ax.text(X, max+1, 'ARXIV', horizontalalignment='center', verticalalignment='cent
 ax.text(Y, max+1, 'ZBMATH', horizontalalignment='center', verticalalignment='center', fontdict={'size':18, 'weight':700})
 
 # Decoration
-title = "Comparing Top 50 Frequent Math\nbetween arXiv and zbMATH with Complexity {:n}".format(complexity)
-
+title = "Complexity {:n}".format(complexity)
+ax.text((X+Y)/2,
+        max+2.3,
+        title,
+        horizontalalignment='center',
+        verticalalignment='center',
+        fontdict={'size': 22, 'weight': 700}
+        )
 # ax.set_title(title, fontdict={'size': 22})
 
-ax.set(xlim=(X-0.05, Y+0.05), ylim=(0.2, max+1.6))
+ax.set(xlim=(X-0.13, Y+0.15), ylim=(0.2, max+1.7))
 ax.set_xticks([X, Y])
 ax.set_xticklabels(["", ""])
 
@@ -155,9 +166,9 @@ plt.gca().spines["right"].set_alpha(.0)
 plt.gca().spines["left"].set_alpha(.0)
 
 plt.subplots_adjust(
-    top = 0.99,
+    top = 0.96,
     bottom = 0,
-    right = 0.97,
+    right = 1,
     left = 0.07,
     hspace = 0,
     wspace = 0
